@@ -1,0 +1,352 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.Sweep-arm64-apple-macosx-release.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/sources",
+      "importPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "Sweep",
+      "moduleOutputPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules/Sweep.swiftmodule",
+      "objects" : [
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupModel.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupViews.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Dashboard.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Security.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Support.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "12",
+        "-serialize-diagnostics",
+        "-O",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "Sweep_main",
+        "-swift-version",
+        "5",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "sweep"
+      ],
+      "outputFileMapPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupViews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Dashboard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Security.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Support.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules/Sweep.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupModel.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+      ],
+      "tempsPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "Sweep" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "Sweep",
+      "-package-name",
+      "sweep",
+      "-c",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupModel.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift",
+      "-I",
+      "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "12",
+      "-serialize-diagnostics",
+      "-O",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "Sweep_main",
+      "-swift-version",
+      "5",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "sweep",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "Sweep" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupModel.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/sources"
+    },
+    "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupModel.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupViews.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Dashboard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Security.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Support.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.product/Objects.LinkFileList"
+    },
+    "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+    }
+  }
+}

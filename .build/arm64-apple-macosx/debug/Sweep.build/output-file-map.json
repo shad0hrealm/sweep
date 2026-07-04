@@ -1,0 +1,61 @@
+{
+  "": {
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/primary.swiftdeps"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupModel.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupModel.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupModel.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupModel.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupModel.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupViews.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupViews.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupViews~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupViews.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/CleanupViews.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp.dia"
+  }
+}
