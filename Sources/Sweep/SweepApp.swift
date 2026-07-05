@@ -2,7 +2,7 @@ import SwiftUI
 import Observation
 
 enum AppSection: String, CaseIterable, Identifiable {
-    case dashboard, cleanup, largeFiles, performance, security
+    case dashboard, cleanup, uninstaller, largeFiles, performance, security, settings
 
     var id: String { rawValue }
 
@@ -10,9 +10,11 @@ enum AppSection: String, CaseIterable, Identifiable {
         switch self {
         case .dashboard: "Dashboard"
         case .cleanup: "Cleanup"
+        case .uninstaller: "Uninstaller"
         case .largeFiles: "Large & Old Files"
         case .performance: "Performance"
         case .security: "Security"
+        case .settings: "Settings"
         }
     }
 
@@ -20,9 +22,11 @@ enum AppSection: String, CaseIterable, Identifiable {
         switch self {
         case .dashboard: "gauge.medium"
         case .cleanup: "sparkles"
+        case .uninstaller: "app.dashed"
         case .largeFiles: "doc.badge.clock"
         case .performance: "speedometer"
         case .security: "lock.shield"
+        case .settings: "gearshape"
         }
     }
 }
@@ -36,6 +40,7 @@ final class AppModel {
     let stats = StatsModel()
     let launchItems = LaunchItemsModel()
     let security = SecurityModel()
+    let uninstaller = UninstallerModel()
 
     init() {
         cleanup = CategorySpec.all().map(CleanupCategoryState.init)
@@ -43,15 +48,32 @@ final class AppModel {
 }
 
 @main
+enum SweepMain {
+    static func main() {
+        if CommandLine.arguments.contains("--background-scan") {
+            BackgroundScan.run()
+            return
+        }
+        SweepApp.main()
+    }
+}
+
 struct SweepApp: App {
     @State private var app = AppModel()
+    @AppStorage("menuBarEnabled") private var menuBarEnabled = true
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "main") {
             ContentView()
                 .environment(app)
         }
         .defaultSize(width: 1040, height: 680)
+
+        MenuBarExtra("Sweep", systemImage: "sparkles", isInserted: $menuBarEnabled) {
+            MenuBarView()
+                .environment(app)
+        }
+        .menuBarExtraStyle(.window)
     }
 }
 
@@ -73,9 +95,11 @@ struct ContentView: View {
             switch app.section {
             case .dashboard: DashboardView()
             case .cleanup: CleanupView()
+            case .uninstaller: UninstallerView()
             case .largeFiles: LargeFilesView()
             case .performance: PerformanceView()
             case .security: SecurityView()
+            case .settings: SettingsView()
             }
         }
     }

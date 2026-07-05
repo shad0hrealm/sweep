@@ -49,6 +49,13 @@ struct DashboardView: View {
                         ) { app.section = .cleanup }
                         Divider()
                         actionRow(
+                            icon: "app.dashed",
+                            title: "Uninstall apps completely",
+                            subtitle: "Remove apps along with their support files and caches",
+                            buttonTitle: "Open"
+                        ) { app.section = .uninstaller }
+                        Divider()
+                        actionRow(
                             icon: "doc.badge.clock",
                             title: "Find large & old files",
                             subtitle: "Hunt down the big files you forgot about",

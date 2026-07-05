@@ -1,0 +1,189 @@
+import SwiftUI
+import UserNotifications
+
+// MARK: - launchd agent management
+
+enum ScanScheduler {
+    static let label = "au.com.thehartmanns.sweep.scan"
+
+    static var agentURL: URL {
+        FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/LaunchAgents/\(label).plist")
+    }
+
+    static var isInstalled: Bool {
+        FileManager.default.fileExists(atPath: agentURL.path)
+    }
+
+    /// Writes and loads a launchd agent that runs `Sweep --background-scan`.
+    /// Daily at 12:30, or Mondays at 12:30 when weekly.
+    static func install(weekly: Bool) throws {
+        guard let exe = Bundle.main.executablePath else { return }
+        var interval: [String: Int] = ["Hour": 12, "Minute": 30]
+        if weekly { interval["Weekday"] = 1 }
+        let plist: [String: Any] = [
+            "Label": label,
+            "ProgramArguments": [exe, "--background-scan"],
+            "StartCalendarInterval": interval,
+            "RunAtLoad": false,
+        ]
+        let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
+        try FileManager.default.createDirectory(at: agentURL.deletingLastPathComponent(),
+                                                withIntermediateDirectories: true)
+        try data.write(to: agentURL)
+        let uid = getuid()
+        Shell.run("/bin/launchctl", ["bootout", "gui/\(uid)/\(label)"])
+        Shell.run("/bin/launchctl", ["bootstrap", "gui/\(uid)", agentURL.path])
+    }
+
+    static func remove() {
+        Shell.run("/bin/launchctl", ["bootout", "gui/\(getuid())/\(label)"])
+        try? FileManager.default.removeItem(at: agentURL)
+    }
+
+    /// Fires the agent immediately (for testing the schedule end to end).
+    static func kickstart() {
+        Shell.run("/bin/launchctl", ["kickstart", "gui/\(getuid())/\(label)"])
+    }
+}
+
+// MARK: - Headless scan (run via `Sweep --background-scan`)
+
+enum BackgroundScan {
+    static let dateKey = "lastBackgroundScanDate"
+    static let bytesKey = "lastBackgroundScanBytes"
+
+    static func run() {
+        let fm = FileManager.default
+        var total: Int64 = 0
+        // Downloads are personal files, not junk — exclude them from the headline number.
+        for spec in CategorySpec.all() where spec.id != "downloads" {
+            for root in spec.roots {
+                let options: FileManager.DirectoryEnumerationOptions = spec.includeHidden ? [] : [.skipsHiddenFiles]
+                guard let children = try? fm.contentsOfDirectory(at: root, includingPropertiesForKeys: nil,
+                                                                 options: options) else { continue }
+                for child in children where !spec.exclude.contains(child.lastPathComponent) {
+                    total += allocatedSize(of: child)
+                }
+            }
+            for whole in spec.wholeItems {
+                total += allocatedSize(of: whole)
+            }
+        }
+
+        let defaults = UserDefaults.standard
+        defaults.set(Date().timeIntervalSince1970, forKey: dateKey)
+        defaults.set(total, forKey: bytesKey)
+
+        notify(total: total)
+    }
+
+    private static func notify(total: Int64) {
+        guard Bundle.main.bundleIdentifier != nil else { return }
+        let center = UNUserNotificationCenter.current()
+        let semaphore = DispatchSemaphore(value: 0)
+        center.getNotificationSettings { settings in
+            guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+                semaphore.signal()
+                return
+            }
+            let content = UNMutableNotificationContent()
+            content.title = "Sweep scan complete"
+            content.body = total > 100_000_000
+                ? "\(formatBytes(total)) of removable junk found. Open Sweep to review — nothing was cleaned automatically."
+                : "Your Mac is tidy: only \(formatBytes(total)) of junk found."
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+            center.add(request) { _ in semaphore.signal() }
+        }
+        _ = semaphore.wait(timeout: .now() + 10)
+    }
+}
+
+// MARK: - Settings view
+
+struct SettingsView: View {
+    @AppStorage("menuBarEnabled") private var menuBarEnabled = true
+    @AppStorage("scheduleEnabled") private var scheduleEnabled = false
+    @AppStorage("scheduleWeekly") private var scheduleWeekly = false
+    @AppStorage(BackgroundScan.dateKey) private var lastScanDate = 0.0
+    @AppStorage(BackgroundScan.bytesKey) private var lastScanBytes = 0
+    @State private var scheduleError: String?
+
+    var body: some View {
+        Form {
+            Section("Menu Bar") {
+                Toggle("Show Sweep in the menu bar", isOn: $menuBarEnabled)
+                Text("Disk, memory and junk at a glance, without opening the app.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Scheduled Scan") {
+                Toggle("Scan for junk automatically", isOn: $scheduleEnabled)
+                Picker("Frequency", selection: $scheduleWeekly) {
+                    Text("Daily (12:30 pm)").tag(false)
+                    Text("Weekly (Monday 12:30 pm)").tag(true)
+                }
+                .disabled(!scheduleEnabled)
+
+                Text("Runs a lightweight scan in the background and notifies you of what's reclaimable. Nothing is ever cleaned automatically. If you move Sweep.app, toggle this off and on again so the schedule points at the new location.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
+                if scheduleEnabled {
+                    LabeledContent("Last scheduled scan") {
+                        if lastScanDate > 0 {
+                            Text("\(relativeDate(Date(timeIntervalSince1970: lastScanDate))) — \(formatBytes(Int64(lastScanBytes))) found")
+                        } else {
+                            Text("Hasn't run yet")
+                        }
+                    }
+                    Button("Run Scheduled Scan Now") {
+                        ScanScheduler.kickstart()
+                    }
+                }
+
+                if let scheduleError {
+                    Text(scheduleError)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                }
+            }
+
+            Section("About") {
+                LabeledContent("Version", value: "1.1")
+                LabeledContent("Location", value: Bundle.main.bundlePath)
+            }
+        }
+        .formStyle(.grouped)
+        .navigationTitle("Settings")
+        .onChange(of: scheduleEnabled) { _, enabled in
+            scheduleError = nil
+            if enabled {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge]) { _, _ in }
+                do {
+                    try ScanScheduler.install(weekly: scheduleWeekly)
+                } catch {
+                    scheduleError = "Couldn't install the schedule: \(error.localizedDescription)"
+                    scheduleEnabled = false
+                }
+            } else {
+                ScanScheduler.remove()
+            }
+        }
+        .onChange(of: scheduleWeekly) { _, weekly in
+            guard scheduleEnabled else { return }
+            do {
+                try ScanScheduler.install(weekly: weekly)
+            } catch {
+                scheduleError = "Couldn't update the schedule: \(error.localizedDescription)"
+            }
+        }
+        .onAppear {
+            // Heal a stale toggle if the agent file was removed out-of-band.
+            if scheduleEnabled && !ScanScheduler.isInstalled {
+                try? ScanScheduler.install(weekly: scheduleWeekly)
+            }
+        }
+    }
+}

@@ -25,6 +25,11 @@ Trash so mistakes are recoverable.
 Library and Trash skipped) for files above a size threshold, showing when each
 was last opened. Sort by size or by staleness.
 
+**Uninstaller** — lists your applications with true on-disk size and Spotlight's
+last-used date. Selecting an app hunts down its leftovers — Application Support,
+caches, preferences, containers, saved state, cookies, launch agents — and
+moves the lot to the Trash. Warns if the app is still running.
+
 **Performance** — memory/disk/CPU-load cards, top processes by CPU, and every
 launch agent & daemon on the system with one-click reveal; user-level agents can
 be removed (to Trash). Shortcut into System Settings' Login Items pane.
@@ -34,6 +39,14 @@ application firewall, Time Machine, and automatic update checking, with plain
 advice for anything off. Also reviews launch agents/daemons for malware-ish
 traits: Apple-style identifiers outside `/System`, executables in temp
 directories, and orphaned agents whose binaries are gone.
+
+**Menu bar** — disk, memory and junk-found at a glance, with scan/review
+shortcuts. Toggle it in Settings.
+
+**Scheduled scans** (Settings) — a launchd agent runs `Sweep --background-scan`
+daily or weekly and posts a notification with the amount of reclaimable junk.
+Nothing is ever cleaned automatically. If you move Sweep.app, toggle the
+schedule off and on so the agent points at the new location.
 
 ## Building
 
@@ -64,4 +77,5 @@ script ad-hoc signs the bundle so that grant survives rebuilds.
 - "Last opened" dates rely on filesystem access times, which macOS doesn't
   always update (e.g. on APFS with relatime-like behaviour) — treat them as a
   hint, not gospel.
-- No always-on background monitoring or menu-bar widget (yet).
+- Scheduled-scan notifications require granting notification permission (Sweep
+  asks when you enable the schedule).

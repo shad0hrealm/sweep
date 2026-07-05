@@ -28,11 +28,23 @@
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.dia"
   },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift": {
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.dia"
+  },
   "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift": {
     "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o",
     "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance~partial.swiftmodule",
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Scheduler.swift": {
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.dia"
   },
   "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift": {
     "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Security.swift.o",
@@ -51,5 +63,11 @@
     "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp~partial.swiftmodule",
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift": {
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.dia"
   }
 }

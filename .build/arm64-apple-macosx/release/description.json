@@ -40,7 +40,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Scheduler.swift"
         },
         {
           "kind" : "file",
@@ -53,6 +61,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift"
         },
         {
           "kind" : "file",
@@ -71,10 +83,13 @@
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupViews.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Dashboard.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Security.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Support.swift.o",
-        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o"
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -136,7 +151,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.swift.o"
         },
         {
           "kind" : "file",
@@ -152,6 +175,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules/Sweep.swiftmodule"
         }
       ],
@@ -161,10 +188,13 @@
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Scheduler.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
-        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift"
       ],
       "tempsPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build",
       "wholeModuleOptimization" : true
@@ -185,10 +215,13 @@
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Scheduler.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift",
       "-I",
       "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Modules",
       "-target",
@@ -275,7 +308,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Scheduler.swift"
         },
         {
           "kind" : "file",
@@ -288,6 +329,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift"
         }
       ],
       "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/sources"
@@ -317,7 +362,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Performance.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Scheduler.swift.o"
         },
         {
           "kind" : "file",
@@ -330,6 +383,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/SweepApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swift.o"
         }
       ],
       "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.product/Objects.LinkFileList"
