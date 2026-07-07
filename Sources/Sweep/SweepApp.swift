@@ -41,6 +41,7 @@ final class AppModel {
     let launchItems = LaunchItemsModel()
     let security = SecurityModel()
     let uninstaller = UninstallerModel()
+    let orphans = OrphansModel()
 
     init() {
         cleanup = CategorySpec.all().map(CleanupCategoryState.init)
@@ -50,8 +51,18 @@ final class AppModel {
 @main
 enum SweepMain {
     static func main() {
-        if CommandLine.arguments.contains("--background-scan") {
+        let args = CommandLine.arguments
+        if args.contains("--background-scan") {
             BackgroundScan.run()
+            return
+        }
+        // Debug/verification CLI, e.g.: Sweep --leftovers "/Applications/Google Chrome.app"
+        if let index = args.firstIndex(of: "--leftovers"), args.count > index + 1 {
+            DebugCLI.leftovers(appPath: args[index + 1])
+            return
+        }
+        if args.contains("--orphans") {
+            DebugCLI.orphans()
             return
         }
         SweepApp.main()

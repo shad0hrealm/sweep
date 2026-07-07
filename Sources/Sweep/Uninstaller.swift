@@ -13,10 +13,36 @@ struct AppInfo: Identifiable, Hashable, Sendable {
 }
 
 struct LeftoverItem: Identifiable, Hashable, Sendable {
+    enum Domain: Sendable { case user, system }
+
     var id: URL { url }
     let url: URL
     let size: Int64
     let kind: String
+    var domain: Domain = .user
+    var note: String? = nil
+    var defaultSelected: Bool = true
+}
+
+struct ReceiptInfo: Identifiable, Hashable, Sendable {
+    var id: String { pkgID }
+    let pkgID: String
+    let location: String
+    let existingPaths: [String]
+}
+
+/// "com.google.Chrome" → "com.google"; "au.com.thehartmanns.sweep" → "au.com.thehartmanns".
+/// Returns nil for Apple identifiers and non-reverse-domain names.
+func vendorPrefix(of bundleID: String) -> String? {
+    let parts = bundleID.lowercased().split(separator: ".")
+    guard parts.count >= 3 else { return nil }
+    var count = 2
+    // ccTLD second-level domains: au.com.vendor.app → vendor is three components.
+    if parts[0].count == 2, ["com", "net", "org", "edu", "gov", "co", "ac"].contains(String(parts[1])), parts.count >= 4 {
+        count = 3
+    }
+    let vendor = parts.prefix(count).joined(separator: ".")
+    return vendor == "com.apple" ? nil : vendor
 }
 
 // MARK: - App list
@@ -76,7 +102,7 @@ final class UninstallerModel {
         apps.removeAll { $0.id == app.id }
     }
 
-    nonisolated private static func appBundles() -> [URL] {
+    nonisolated static func appBundles() -> [URL] {
         let fm = FileManager.default
         let dirs = [URL(fileURLWithPath: "/Applications"),
                     fm.homeDirectoryForCurrentUser.appendingPathComponent("Applications")]
@@ -87,6 +113,14 @@ final class UninstallerModel {
             bundles += children.filter { $0.pathExtension == "app" }
         }
         return bundles
+    }
+
+    /// App list without size measurement — for collision checks and the debug CLI.
+    nonisolated static func quickAppList() -> [AppInfo] {
+        appBundles().map { url in
+            AppInfo(url: url, name: url.deletingPathExtension().lastPathComponent,
+                    bundleID: Bundle(url: url)?.bundleIdentifier, size: 0, lastUsed: nil)
+        }
     }
 
     /// Batch-reads Spotlight's "last used" date for all apps in one mdls call.
@@ -115,11 +149,13 @@ final class UninstallerModel {
 final class LeftoverState {
     let app: AppInfo
     var items: [LeftoverItem] = []
+    var receipts: [ReceiptInfo] = []
     var selected: Set<URL> = []
     var includeApp = true
     var isScanning = false
     var hasScanned = false
     var resultMessage: String?
+    private var installedAppsCache: [AppInfo] = []
 
     init(app: AppInfo) {
         self.app = app
@@ -130,25 +166,41 @@ final class LeftoverState {
         return NSWorkspace.shared.runningApplications.contains { $0.bundleIdentifier == bundleID }
     }
 
+    var userItems: [LeftoverItem] { items.filter { $0.domain == .user } }
+    var systemItems: [LeftoverItem] { items.filter { $0.domain == .system } }
+
     var selectedSize: Int64 {
-        items.filter { selected.contains($0.url) }.reduce(includeApp ? app.size : 0) { $0 + $1.size }
+        userItems.filter { selected.contains($0.url) }.reduce(includeApp ? app.size : 0) { $0 + $1.size }
     }
 
-    func scan() async {
+    var selectedCount: Int {
+        userItems.filter { selected.contains($0.url) }.count
+    }
+
+    func scan(installedApps: [AppInfo]) async {
         guard !isScanning else { return }
         isScanning = true
+        installedAppsCache = installedApps
         let app = self.app
-        let found = await Task.detached(priority: .userInitiated) { Self.findLeftovers(for: app) }.value
-        items = found
-        selected = Set(found.map(\.url))
+
+        async let foundItems = Task.detached(priority: .userInitiated) {
+            Self.findLeftovers(for: app, installedApps: installedApps)
+        }.value
+        async let foundReceipts = Task.detached(priority: .userInitiated) {
+            Self.findReceipts(for: app)
+        }.value
+
+        items = await foundItems
+        receipts = await foundReceipts
+        selected = Set(items.filter { $0.domain == .user && $0.defaultSelected }.map(\.url))
         hasScanned = true
         isScanning = false
     }
 
-    /// Trashes the selected leftovers (and the app bundle if included).
-    /// Returns true if the app bundle itself was removed.
+    /// Trashes the selected user-domain leftovers (and the app bundle if included).
+    /// System-domain items are never touched. Returns true if the app bundle was removed.
     func uninstall() async -> Bool {
-        let targets = items.filter { selected.contains($0.url) }
+        let targets = userItems.filter { selected.contains($0.url) }
         let includeApp = self.includeApp
         let appURL = app.url
 
@@ -185,75 +237,192 @@ final class LeftoverState {
         }
         resultMessage = message
         if !outcome.appRemoved || !outcome.failures.isEmpty {
-            await scan()
+            await scan(installedApps: installedAppsCache)
         }
         return outcome.appRemoved
     }
 
-    nonisolated private static func findLeftovers(for app: AppInfo) -> [LeftoverItem] {
+    // MARK: Discovery
+
+    nonisolated static func findLeftovers(for app: AppInfo, installedApps: [AppInfo]) -> [LeftoverItem] {
         let fm = FileManager.default
-        let lib = fm.homeDirectoryForCurrentUser.appendingPathComponent("Library")
+        let userLib = fm.homeDirectoryForCurrentUser.appendingPathComponent("Library")
         var results: [LeftoverItem] = []
         var seen = Set<URL>()
 
-        func add(_ url: URL, _ kind: String) {
-            guard !seen.contains(url), fm.fileExists(atPath: url.path) else { return }
-            seen.insert(url)
-            results.append(LeftoverItem(url: url, size: allocatedSize(of: url), kind: kind))
+        let bundleID = app.bundleID
+        let bundleLower = bundleID?.lowercased()
+        let nameLower = app.name.lowercased()
+        let vendor = bundleID.flatMap { vendorPrefix(of: $0) }
+        let vendorFolder = vendor?.split(separator: ".").last.map(String.init)
+
+        // Other installed apps from the same vendor — the collision guard.
+        let vendorSiblings: [String] = vendor.map { v in
+            installedApps
+                .filter { $0.url != app.url && $0.bundleID.flatMap(vendorPrefix(of:)) == v }
+                .map(\.name)
+                .sorted()
+        } ?? []
+
+        let vendorNote: String?
+        let vendorSelected: Bool
+        if vendorSiblings.isEmpty {
+            vendorNote = "Vendor files — matched by publisher, not app name"
+            vendorSelected = true
+        } else {
+            vendorNote = "Shared with \(vendorSiblings.joined(separator: ", ")) — removing this affects those apps too"
+            vendorSelected = false
         }
 
-        let bundleID = app.bundleID
-        let nameLower = app.name.lowercased()
+        func add(_ url: URL, _ kind: String, domain: LeftoverItem.Domain = .user,
+                 note: String? = nil, defaultSelected: Bool = true) {
+            guard !seen.contains(url), fm.fileExists(atPath: url.path) else { return }
+            seen.insert(url)
+            results.append(LeftoverItem(url: url, size: allocatedSize(of: url), kind: kind,
+                                        domain: domain, note: note,
+                                        defaultSelected: domain == .user && defaultSelected))
+        }
 
-        // Folders commonly named after either the app or its bundle ID.
-        let byName: [(String, String)] = [("Application Support", "Application Support"),
-                                          ("Caches", "Caches"),
-                                          ("Logs", "Logs")]
-        for (dir, kind) in byName {
-            let parent = lib.appendingPathComponent(dir)
+        func isDirectMatch(_ childName: String) -> Bool {
+            let lower = childName.lowercased()
+            if lower == nameLower { return true }
+            if let bundleLower {
+                return lower == bundleLower || lower.hasPrefix(bundleLower + ".")
+            }
+            return false
+        }
+
+        func isVendorMatch(_ childName: String) -> Bool {
+            let lower = childName.lowercased()
+            if let vendorFolder, lower == vendorFolder { return true }
+            if let vendor, lower.hasPrefix(vendor + ".") { return true }
+            return false
+        }
+
+        // Folders commonly named after the app, its bundle ID, or its vendor.
+        for (dir, kind) in [("Application Support", "Application Support"),
+                            ("Caches", "Caches"),
+                            ("Logs", "Logs")] {
+            let parent = userLib.appendingPathComponent(dir)
             guard let children = try? fm.contentsOfDirectory(at: parent, includingPropertiesForKeys: nil) else { continue }
             for child in children {
-                let childName = child.lastPathComponent
-                let matchesName = childName.lowercased() == nameLower
-                let matchesBundle = bundleID.map { childName == $0 || childName.hasPrefix($0 + ".") } ?? false
-                if matchesName || matchesBundle {
+                if isDirectMatch(child.lastPathComponent) {
                     add(child, kind)
+                } else if isVendorMatch(child.lastPathComponent) {
+                    add(child, kind, note: vendorNote, defaultSelected: vendorSelected)
                 }
             }
         }
 
         if let bundleID {
-            add(lib.appendingPathComponent("Preferences/\(bundleID).plist"), "Preferences")
-            add(lib.appendingPathComponent("Saved Application State/\(bundleID).savedState"), "Saved State")
-            add(lib.appendingPathComponent("Containers/\(bundleID)"), "Container")
-            add(lib.appendingPathComponent("WebKit/\(bundleID)"), "WebKit Data")
-            add(lib.appendingPathComponent("HTTPStorages/\(bundleID)"), "HTTP Storage")
-            add(lib.appendingPathComponent("Cookies/\(bundleID).binarycookies"), "Cookies")
+            add(userLib.appendingPathComponent("Preferences/\(bundleID).plist"), "Preferences")
+            add(userLib.appendingPathComponent("Saved Application State/\(bundleID).savedState"), "Saved State")
+            add(userLib.appendingPathComponent("Containers/\(bundleID)"), "Container")
+            add(userLib.appendingPathComponent("WebKit/\(bundleID)"), "WebKit Data")
+            add(userLib.appendingPathComponent("HTTPStorages/\(bundleID)"), "HTTP Storage")
+            add(userLib.appendingPathComponent("Cookies/\(bundleID).binarycookies"), "Cookies")
 
-            // Preference variants like com.example.app.helper.plist
-            if let prefs = try? fm.contentsOfDirectory(at: lib.appendingPathComponent("Preferences"),
-                                                       includingPropertiesForKeys: nil) {
-                for pref in prefs where pref.lastPathComponent.hasPrefix(bundleID + ".") {
-                    add(pref, "Preferences")
+            // Bundle-ID-prefixed and vendor-prefixed items across the ID-keyed folders.
+            for (dir, kind) in [("Preferences", "Preferences"),
+                                ("Saved Application State", "Saved State"),
+                                ("Containers", "Container"),
+                                ("WebKit", "WebKit Data"),
+                                ("HTTPStorages", "HTTP Storage"),
+                                ("Cookies", "Cookies"),
+                                ("LaunchAgents", "Launch Agent")] {
+                let parent = userLib.appendingPathComponent(dir)
+                guard let children = try? fm.contentsOfDirectory(at: parent, includingPropertiesForKeys: nil) else { continue }
+                for child in children {
+                    if isDirectMatch(child.lastPathComponent) || child.lastPathComponent.contains(bundleID) {
+                        add(child, kind)
+                    } else if isVendorMatch(child.lastPathComponent) {
+                        add(child, kind, note: vendorNote, defaultSelected: vendorSelected)
+                    }
                 }
             }
+
             // Group containers are usually "<team-id>.<bundle-id-ish>".
-            if let groups = try? fm.contentsOfDirectory(at: lib.appendingPathComponent("Group Containers"),
+            if let groups = try? fm.contentsOfDirectory(at: userLib.appendingPathComponent("Group Containers"),
                                                         includingPropertiesForKeys: nil) {
                 for group in groups where group.lastPathComponent.contains(bundleID) {
                     add(group, "Group Container")
                 }
             }
-            // Launch agents installed by the app.
-            if let agents = try? fm.contentsOfDirectory(at: lib.appendingPathComponent("LaunchAgents"),
-                                                        includingPropertiesForKeys: nil) {
-                for agent in agents where agent.lastPathComponent.contains(bundleID) {
-                    add(agent, "Launch Agent")
+        }
+
+        // System domain — surfaced for transparency, strictly reveal-only.
+        let systemChecks: [(String, String)] = [("/Library/Application Support", "Application Support"),
+                                                ("/Library/Caches", "Caches"),
+                                                ("/Library/Preferences", "Preferences"),
+                                                ("/Library/LaunchAgents", "Launch Agent"),
+                                                ("/Library/LaunchDaemons", "Launch Daemon"),
+                                                ("/Library/PrivilegedHelperTools", "Privileged Helper")]
+        for (dir, kind) in systemChecks {
+            let parent = URL(fileURLWithPath: dir)
+            guard let children = try? fm.contentsOfDirectory(at: parent, includingPropertiesForKeys: nil) else { continue }
+            for child in children {
+                let childName = child.lastPathComponent
+                let matches = isDirectMatch(childName)
+                    || isVendorMatch(childName)
+                    || (bundleID.map { childName.contains($0) } ?? false)
+                if matches {
+                    add(child, kind, domain: .system, defaultSelected: false)
                 }
             }
         }
 
-        return results.sorted { $0.size > $1.size }
+        return results.sorted {
+            if $0.domain != $1.domain { return $0.domain == .user }
+            return $0.size > $1.size
+        }
+    }
+
+    nonisolated static func findReceipts(for app: AppInfo) -> [ReceiptInfo] {
+        guard let bundleLower = app.bundleID?.lowercased() else { return [] }
+        let vendor = vendorPrefix(of: bundleLower)
+        let allPkgs = Shell.run("/usr/sbin/pkgutil", ["--pkgs"])
+            .split(separator: "\n").map(String.init)
+
+        // For vendor-prefixed receipts, require the app's name to appear too —
+        // otherwise OneDrive would claim every com.microsoft.* package on the system.
+        var nameTokens = Set(app.name.lowercased().split(separator: " ").map(String.init))
+        if let last = bundleLower.split(separator: ".").last { nameTokens.insert(String(last)) }
+        nameTokens = nameTokens.filter { $0.count >= 3 && !(vendor ?? "").contains($0) }
+
+        let matches = allPkgs.filter { pkg in
+            let lower = pkg.lowercased()
+            if lower.hasPrefix("com.apple.") { return false }
+            if lower == bundleLower || lower.hasPrefix(bundleLower + ".") { return true }
+            if let vendor, lower.hasPrefix(vendor + "."), nameTokens.contains(where: { lower.contains($0) }) { return true }
+            return false
+        }.prefix(12)
+
+        var result: [ReceiptInfo] = []
+        for pkg in matches {
+            var volume = "/"
+            var location = ""
+            let infoOutput = Shell.run("/usr/sbin/pkgutil", ["--pkg-info-plist", pkg])
+            if let data = infoOutput.data(using: .utf8),
+               let dict = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any] {
+                volume = dict["volume"] as? String ?? "/"
+                location = dict["install-location"] as? String ?? ""
+            }
+            let base = (volume as NSString).appendingPathComponent(location)
+
+            var tops = Set<String>()
+            let files = Shell.run("/usr/sbin/pkgutil", ["--files", pkg, "--only-dirs"])
+            for line in files.split(separator: "\n") {
+                if let first = line.split(separator: "/").first {
+                    tops.insert(String(first))
+                }
+            }
+            let paths = tops
+                .map { (base as NSString).appendingPathComponent($0) }
+                .filter { FileManager.default.fileExists(atPath: $0) }
+                .sorted()
+            result.append(ReceiptInfo(pkgID: pkg, location: base, existingPaths: paths))
+        }
+        return result.sorted { $0.pkgID < $1.pkgID }
     }
 }
 
@@ -290,7 +459,13 @@ struct UninstallerView: View {
             .navigationDestination(for: AppInfo.self) { info in
                 AppUninstallDetail(info: info)
             }
+            .navigationDestination(for: String.self) { _ in
+                OrphansView()
+            }
             .toolbar {
+                NavigationLink(value: "orphans") {
+                    Label("Orphaned Leftovers", systemImage: "questionmark.folder")
+                }
                 Button {
                     Task { await model.scan() }
                 } label: {
@@ -357,9 +532,9 @@ struct AppUninstallDetail: View {
             } label: {
                 Label("Uninstall (\(formatBytes(state.selectedSize)))", systemImage: "trash")
             }
-            .disabled(state.isScanning || (!state.includeApp && state.selected.isEmpty))
+            .disabled(state.isScanning || (!state.includeApp && state.selectedCount == 0))
         }
-        .task { await state.scan() }
+        .task { await state.scan(installedApps: app.uninstaller.apps) }
         .confirmationDialog(
             "Uninstall \(state.app.name)?",
             isPresented: $confirmUninstall
@@ -375,8 +550,8 @@ struct AppUninstallDetail: View {
             }
         } message: {
             Text(state.includeApp
-                 ? "The app and \(state.selected.count) related item\(state.selected.count == 1 ? "" : "s") are moved to the Trash (\(formatBytes(state.selectedSize)))."
-                 : "\(state.selected.count) related item\(state.selected.count == 1 ? "" : "s") are moved to the Trash — the app itself is kept.")
+                 ? "The app and \(state.selectedCount) related item\(state.selectedCount == 1 ? "" : "s") are moved to the Trash (\(formatBytes(state.selectedSize)))."
+                 : "\(state.selectedCount) related item\(state.selectedCount == 1 ? "" : "s") are moved to the Trash — the app itself is kept.")
         }
     }
 
@@ -412,44 +587,115 @@ struct AppUninstallDetail: View {
 
     private var leftoverList: some View {
         List {
-            Section(state.items.isEmpty
-                    ? "No leftover files found outside the app bundle"
-                    : "Leftovers (\(state.items.count))") {
-                ForEach(state.items) { item in
-                    HStack(spacing: 10) {
-                        Toggle("", isOn: Binding(
-                            get: { state.selected.contains(item.url) },
-                            set: { on in
-                                if on { state.selected.insert(item.url) } else { state.selected.remove(item.url) }
-                            }
-                        ))
-                        .toggleStyle(.checkbox)
-                        .labelsHidden()
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.url.lastPathComponent).lineLimit(1)
-                            Text(item.url.deletingLastPathComponent().path)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
+            Section(state.userItems.isEmpty
+                    ? "No leftover files found in your user library"
+                    : "Leftovers (\(state.userItems.count))") {
+                ForEach(state.userItems) { item in
+                    LeftoverRow(item: item, isSelected: Binding(
+                        get: { state.selected.contains(item.url) },
+                        set: { on in
+                            if on { state.selected.insert(item.url) } else { state.selected.remove(item.url) }
                         }
-                        Spacer()
-                        Text(item.kind)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(.quaternary, in: Capsule())
-                        Text(formatBytes(item.size))
-                            .font(.callout.monospacedDigit())
-                            .frame(width: 80, alignment: .trailing)
+                    ))
+                }
+            }
+
+            if !state.systemItems.isEmpty {
+                Section {
+                    ForEach(state.systemItems) { item in
+                        LeftoverRow(item: item, isSelected: nil)
                     }
-                    .contextMenu {
-                        Button("Reveal in Finder") { revealInFinder(item.url) }
+                } header: {
+                    Text("System files — reveal only (\(state.systemItems.count))")
+                } footer: {
+                    Text("These live outside your user folder and need administrator rights to remove. Sweep never deletes them — use Reveal and remove them in Finder, which will ask for your password.")
+                }
+            }
+
+            if !state.receipts.isEmpty {
+                Section {
+                    ForEach(state.receipts) { receipt in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(receipt.pkgID)
+                                .fontWeight(.medium)
+                            ForEach(receipt.existingPaths, id: \.self) { path in
+                                HStack {
+                                    Text(path)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                    Spacer()
+                                    Button("Reveal") { revealInFinder(URL(fileURLWithPath: path)) }
+                                        .buttonStyle(.link)
+                                        .font(.caption)
+                                }
+                            }
+                            if receipt.existingPaths.isEmpty {
+                                Text("No files from this package remain on disk.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 3)
                     }
+                } header: {
+                    Text("Installer package receipts (\(state.receipts.count))")
+                } footer: {
+                    Text("macOS recorded these locations when the app's installer package ran. Reveal-only — useful for spotting files outside the usual folders.")
                 }
             }
         }
         .listStyle(.inset)
+    }
+}
+
+struct LeftoverRow: View {
+    let item: LeftoverItem
+    /// nil = reveal-only (system domain), no checkbox.
+    let isSelected: Binding<Bool>?
+
+    var body: some View {
+        HStack(spacing: 10) {
+            if let isSelected {
+                Toggle("", isOn: isSelected)
+                    .toggleStyle(.checkbox)
+                    .labelsHidden()
+            } else {
+                Image(systemName: "lock")
+                    .foregroundStyle(.secondary)
+                    .frame(width: 14)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.url.lastPathComponent).lineLimit(1)
+                Text(item.url.deletingLastPathComponent().path)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                if let note = item.note {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(item.defaultSelected ? AnyShapeStyle(.secondary) : AnyShapeStyle(.orange))
+                }
+            }
+            Spacer()
+            Text(item.kind)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(.quaternary, in: Capsule())
+            if isSelected == nil {
+                Button("Reveal") { revealInFinder(item.url) }
+                    .buttonStyle(.link)
+                    .font(.callout)
+            }
+            Text(formatBytes(item.size))
+                .font(.callout.monospacedDigit())
+                .frame(width: 80, alignment: .trailing)
+        }
+        .contextMenu {
+            Button("Reveal in Finder") { revealInFinder(item.url) }
+        }
     }
 }

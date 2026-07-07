@@ -23,6 +23,13 @@
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Dashboard.dia"
   },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/DebugCLI.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.dia"
+  },
   "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift": {
     "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.d",
     "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.swift.o",
@@ -36,6 +43,13 @@
     "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/MenuBar~partial.swiftmodule",
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/MenuBar.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/MenuBar.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Orphans.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Orphans.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Orphans.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Orphans~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Orphans.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Orphans.dia"
   },
   "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Performance.swift": {
     "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Performance.d",

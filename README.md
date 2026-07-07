@@ -30,6 +30,24 @@ last-used date. Selecting an app hunts down its leftovers — Application Suppor
 caches, preferences, containers, saved state, cookies, launch agents — and
 moves the lot to the Trash. Warns if the app is still running.
 
+Beyond exact name/bundle-ID matches, it also finds:
+
+- *Vendor files* — folders keyed by publisher rather than app (Chrome's data
+  lives in `Application Support/Google`). If another installed app shares the
+  vendor, the item is flagged "shared with …" and deselected by default.
+- *System-domain files* — privileged helpers, launch daemons and vendor folders
+  in `/Library`. These are **reveal-only by design**: Sweep never deletes
+  anything requiring admin rights; it shows you where they are and you remove
+  them in Finder.
+- *Installer receipts* — locations recorded by `pkgutil` when the app's `.pkg`
+  installer ran, catching files outside the usual folders. Also reveal-only.
+
+**Orphaned Leftovers** (toolbar in Uninstaller) — scans your user Library for
+reverse-domain-named files matching no installed or running app: the remnants
+of software you've already deleted. Launch agents whose executables still exist
+are treated as active and skipped. Nothing is pre-selected; attribution is
+heuristic, so review before cleaning.
+
 **Performance** — memory/disk/CPU-load cards, top processes by CPU, and every
 launch agent & daemon on the system with one-click reveal; user-level agents can
 be removed (to Trash). Shortcut into System Settings' Login Items pane.
