@@ -34,11 +34,25 @@ struct SecurityCheck: Identifiable, Sendable {
 @MainActor
 @Observable
 final class SecurityModel {
+    private static let ignoredKey = "ignoredSecurityChecks"
+
     var checks: [SecurityCheck] = []
     var isRunning = false
     var hasRun = false
+    var ignored: Set<String> = Set(UserDefaults.standard.stringArray(forKey: SecurityModel.ignoredKey) ?? [])
 
-    var warningCount: Int { checks.filter { if case .warn = $0.status { return true } else { return false } }.count }
+    var activeChecks: [SecurityCheck] { checks.filter { !ignored.contains($0.id) } }
+    var ignoredChecks: [SecurityCheck] { checks.filter { ignored.contains($0.id) } }
+
+    /// Warnings that haven't been deliberately ignored — drives the dashboard badge.
+    var warningCount: Int {
+        activeChecks.filter { if case .warn = $0.status { return true } else { return false } }.count
+    }
+
+    func setIgnored(_ id: String, _ on: Bool) {
+        if on { ignored.insert(id) } else { ignored.remove(id) }
+        UserDefaults.standard.set(Array(ignored).sorted(), forKey: SecurityModel.ignoredKey)
+    }
 
     func run() async {
         guard !isRunning else { return }
@@ -60,7 +74,7 @@ final class SecurityModel {
         } else if fv.contains("FileVault is Off") {
             results.append(SecurityCheck(id: "filevault", title: "FileVault disk encryption", status: .warn,
                                          detail: "Your startup disk is not encrypted. Anyone with physical access to this Mac can read your files.",
-                                         advice: "Turn on FileVault in System Settings → Privacy & Security."))
+                                         advice: "Turn on FileVault in System Settings → Privacy & Security. Note: on a headless or remotely-administered Mac this is often left off deliberately — FileVault requires a local login after every reboot before the machine comes up. Use Ignore if that's your setup."))
         } else {
             results.append(SecurityCheck(id: "filevault", title: "FileVault disk encryption", status: .unknown,
                                          detail: "Couldn't determine FileVault status.", advice: nil))
@@ -138,6 +152,51 @@ final class SecurityModel {
 
 // MARK: - View
 
+struct SecurityCheckRow: View {
+    let check: SecurityCheck
+    let isIgnored: Bool
+    let toggleIgnore: () -> Void
+
+    private var canIgnore: Bool {
+        if case .warn = check.status { return true }
+        return false
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: isIgnored ? "bell.slash" : check.status.icon)
+                .foregroundStyle(isIgnored ? AnyShapeStyle(.secondary) : AnyShapeStyle(check.status.color))
+                .frame(width: 20)
+                .padding(.top, 2)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(check.title)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isIgnored ? .secondary : .primary)
+                Text(check.detail)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                if !isIgnored, let advice = check.advice {
+                    Text(advice)
+                        .font(.callout)
+                        .foregroundStyle(.orange)
+                }
+            }
+            Spacer()
+            if isIgnored {
+                Button("Stop Ignoring", action: toggleIgnore)
+                    .buttonStyle(.link)
+                    .font(.callout)
+            } else if canIgnore {
+                Button("Ignore", action: toggleIgnore)
+                    .buttonStyle(.link)
+                    .font(.callout)
+                    .help("Hide this check and exclude it from warning counts. You can restore it any time from the Ignored Checks list.")
+            }
+        }
+        .padding(.vertical, 6)
+    }
+}
+
 struct SecurityView: View {
     @Environment(AppModel.self) private var app
     @State private var confirmTrashItem: LaunchItem?
@@ -151,30 +210,35 @@ struct SecurityView: View {
                         if security.isRunning && security.checks.isEmpty {
                             ProgressView("Checking…").padding()
                         }
-                        ForEach(security.checks) { check in
-                            HStack(alignment: .top, spacing: 10) {
-                                Image(systemName: check.status.icon)
-                                    .foregroundStyle(check.status.color)
-                                    .frame(width: 20)
-                                    .padding(.top, 2)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(check.title).fontWeight(.medium)
-                                    Text(check.detail)
-                                        .font(.callout)
-                                        .foregroundStyle(.secondary)
-                                    if let advice = check.advice {
-                                        Text(advice)
-                                            .font(.callout)
-                                            .foregroundStyle(.orange)
-                                    }
-                                }
-                                Spacer()
+                        ForEach(security.activeChecks) { check in
+                            SecurityCheckRow(check: check, isIgnored: false) {
+                                security.setIgnored(check.id, true)
                             }
-                            .padding(.vertical, 6)
-                            if check.id != security.checks.last?.id { Divider() }
+                            if check.id != security.activeChecks.last?.id { Divider() }
                         }
                     }
                     .padding(6)
+                }
+
+                if !security.ignoredChecks.isEmpty {
+                    GroupBox {
+                        VStack(spacing: 0) {
+                            ForEach(security.ignoredChecks) { check in
+                                SecurityCheckRow(check: check, isIgnored: true) {
+                                    security.setIgnored(check.id, false)
+                                }
+                                if check.id != security.ignoredChecks.last?.id { Divider() }
+                            }
+                        }
+                        .padding(6)
+                    } label: {
+                        HStack {
+                            Text("Ignored Checks")
+                            Text("— excluded from the dashboard and warning counts")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
 
                 GroupBox {
