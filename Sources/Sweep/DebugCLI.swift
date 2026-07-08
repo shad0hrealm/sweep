@@ -35,6 +35,24 @@ enum DebugCLI {
         print("\(items.count) items, \(receipts.count) receipts")
     }
 
+    static func checkUpdate(install: Bool) {
+        print("current: \(Updater.currentVersion)  repo: \(Updater.repo.isEmpty ? "(none)" : Updater.repo)")
+        guard let release = Updater.fetchLatest() else {
+            print("no release found (repo unset, offline, or no releases yet)")
+            return
+        }
+        let newer = Updater.isNewer(release.version, than: Updater.currentVersion)
+        print("latest: \(release.version)  zip: \(release.zipURL)  newer: \(newer)")
+        if install, newer {
+            do {
+                let url = try Updater.install(release)
+                print("installed \(release.version) at \(url.path)")
+            } catch {
+                print("install failed: \(error.localizedDescription)")
+            }
+        }
+    }
+
     static func orphans() {
         let installed = UninstallerModel.quickAppList()
         var ids = Set(installed.compactMap { $0.bundleID?.lowercased() })

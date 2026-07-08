@@ -66,6 +66,14 @@ enum SweepMain {
             DebugCLI.orphans()
             return
         }
+        if args.contains("--check-update") {
+            DebugCLI.checkUpdate(install: false)
+            return
+        }
+        if args.contains("--install-update") {
+            DebugCLI.checkUpdate(install: true)
+            return
+        }
         SweepApp.main()
     }
 }

@@ -80,6 +80,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Updater.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
         },
         {
@@ -104,7 +108,8 @@
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Security.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Support.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/SweepApp.swift.o",
-        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Uninstaller.swift.o"
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Uninstaller.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Updater.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -209,6 +214,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Updater.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Modules/Sweep.swiftmodule"
         }
       ],
@@ -227,7 +236,8 @@
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Security.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift",
-        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift"
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Updater.swift"
       ],
       "tempsPath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build",
       "wholeModuleOptimization" : false
@@ -258,6 +268,7 @@
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Support.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/SweepApp.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Updater.swift",
       "-I",
       "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Modules",
       "-target",
@@ -398,6 +409,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Uninstaller.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Updater.swift"
         }
       ],
       "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/sources"
@@ -464,6 +479,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Uninstaller.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Updater.swift.o"
         }
       ],
       "outputFilePath" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.product/Objects.LinkFileList"

@@ -119,6 +119,26 @@ enum BackgroundScan {
                           detail: previous == nil ? "First run: recorded a baseline of background items and security status." : nil)
         EventStore.flush()
 
+        // Update check — install automatically if enabled, otherwise recommend.
+        if Updater.flag(Updater.checkKey),
+           let release = Updater.fetchLatest(),
+           Updater.isNewer(release.version, than: Updater.currentVersion) {
+            if Updater.flag(Updater.autoInstallKey) {
+                do {
+                    _ = try Updater.install(release)
+                    EventStore.append(.info, "Sweep updated itself to \(release.version)",
+                                      detail: "The previous version is in the Trash.")
+                } catch {
+                    findings.append((.action, "Sweep \(release.version) is available (auto-install failed)",
+                                     error.localizedDescription))
+                }
+            } else {
+                findings.append((.action, "Sweep \(release.version) is available",
+                                 "Install it from Settings → Updates."))
+            }
+            EventStore.flush()
+        }
+
         // Notify only when there's something to act on; quiet runs just log.
         let noteworthy = findings.filter { $0.0 != .info }
         if !noteworthy.isEmpty {
@@ -187,7 +207,12 @@ struct SettingsView: View {
     @AppStorage("scheduleWeekly") private var scheduleWeekly = false
     @AppStorage(BackgroundScan.dateKey) private var lastScanDate = 0.0
     @AppStorage(BackgroundScan.bytesKey) private var lastScanBytes = 0
+    @AppStorage(Updater.checkKey) private var updateCheckEnabled = true
+    @AppStorage(Updater.autoInstallKey) private var autoInstallUpdates = true
     @State private var scheduleError: String?
+    @State private var updateStatus: String?
+    @State private var availableRelease: Updater.Release?
+    @State private var isCheckingUpdate = false
 
     var body: some View {
         Form {
@@ -230,8 +255,42 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Updates") {
+                LabeledContent("Version", value: Updater.currentVersion)
+                if Updater.repo.isEmpty {
+                    Text("Update checks are disabled in this build (no release repository configured).")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Toggle("Check for updates during scheduled scans", isOn: $updateCheckEnabled)
+                    Toggle("Install updates automatically", isOn: $autoInstallUpdates)
+                        .disabled(!updateCheckEnabled)
+                    Text("Automatic installs happen during the scheduled scan; the replaced version goes to the Trash. Turn this off to just get a recommendation in the Activity log instead.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+
+                    HStack {
+                        Button(isCheckingUpdate ? "Checking…" : "Check Now") {
+                            checkForUpdate()
+                        }
+                        .disabled(isCheckingUpdate)
+                        if let updateStatus {
+                            Text(updateStatus)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if let release = availableRelease {
+                            Button("Install \(release.version) & Relaunch") {
+                                installUpdate(release)
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
+                    }
+                }
+            }
+
             Section("About") {
-                LabeledContent("Version", value: "1.1")
                 LabeledContent("Location", value: Bundle.main.bundlePath)
             }
         }
@@ -263,6 +322,40 @@ struct SettingsView: View {
             // Heal a stale toggle if the agent file was removed out-of-band.
             if scheduleEnabled && !ScanScheduler.isInstalled {
                 try? ScanScheduler.install(weekly: scheduleWeekly)
+            }
+        }
+    }
+
+    private func checkForUpdate() {
+        isCheckingUpdate = true
+        updateStatus = nil
+        availableRelease = nil
+        Task {
+            let release = await Task.detached { Updater.fetchLatest() }.value
+            isCheckingUpdate = false
+            guard let release else {
+                updateStatus = "Couldn't reach GitHub — check your connection."
+                return
+            }
+            if Updater.isNewer(release.version, than: Updater.currentVersion) {
+                availableRelease = release
+                updateStatus = "Version \(release.version) is available."
+            } else {
+                updateStatus = "You're up to date (\(Updater.currentVersion))."
+            }
+        }
+    }
+
+    private func installUpdate(_ release: Updater.Release) {
+        updateStatus = "Installing…"
+        Task {
+            do {
+                EventStore.append(.info, "Updating Sweep \(Updater.currentVersion) → \(release.version)")
+                EventStore.flush()
+                try Updater.installAndRelaunch(release)
+            } catch {
+                updateStatus = "Update failed: \(error.localizedDescription)"
+                availableRelease = release
             }
         }
     }
