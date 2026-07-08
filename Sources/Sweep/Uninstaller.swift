@@ -236,6 +236,11 @@ final class LeftoverState {
             message += " — couldn't remove: \(outcome.failures.joined(separator: ", "))"
         }
         resultMessage = message
+        if outcome.appRemoved {
+            EventStore.append(.info, "Uninstalled \(app.name) — \(outcome.removed) items to Trash (\(formatBytes(outcome.bytes + app.size)))")
+        } else if outcome.removed > 0 {
+            EventStore.append(.info, "Cleaned \(app.name) data — \(outcome.removed) items to Trash (\(formatBytes(outcome.bytes)))")
+        }
         if !outcome.appRemoved || !outcome.failures.isEmpty {
             await scan(installedApps: installedAppsCache)
         }

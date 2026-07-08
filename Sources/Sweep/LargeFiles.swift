@@ -119,6 +119,9 @@ final class LargeFilesModel {
 
         lastMessage = "Moved \(outcome.0) file\(outcome.0 == 1 ? "" : "s") to Trash (\(formatBytes(outcome.1)))"
             + (outcome.2 > 0 ? " — \(outcome.2) failed" : "")
+        if outcome.0 > 0 {
+            EventStore.append(.info, "Trashed \(outcome.0) large file\(outcome.0 == 1 ? "" : "s") — \(formatBytes(outcome.1)) freed")
+        }
         let removedURLs = Set(targets.map(\.url))
         results.removeAll { removedURLs.contains($0.url) && !FileManager.default.fileExists(atPath: $0.url.path) }
         selected.removeAll()

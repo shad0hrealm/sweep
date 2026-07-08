@@ -74,6 +74,8 @@ struct DashboardView: View {
                     Text("Quick Actions")
                 }
 
+                activityLog
+
                 Spacer()
             }
             .padding(24)
@@ -81,8 +83,36 @@ struct DashboardView: View {
         .navigationTitle("Dashboard")
         .task {
             await app.stats.refresh()
+            await app.events.refresh()
             if !app.security.hasRun { await app.security.run() }
             if !app.launchItems.hasScanned { await app.launchItems.scan() }
+        }
+    }
+
+    private var activityLog: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 0) {
+                if app.events.events.isEmpty {
+                    Text("Nothing yet. Cleanups you perform and results from scheduled scans appear here — including recommendations and anything that changed while you were away.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .padding(8)
+                }
+                ForEach(app.events.events.prefix(12)) { event in
+                    EventRow(event: event)
+                    if event.id != app.events.events.prefix(12).last?.id { Divider() }
+                }
+            }
+            .padding(6)
+        } label: {
+            HStack {
+                Text("Activity & Recommendations")
+                Spacer()
+                if !app.events.events.isEmpty {
+                    Button("Clear Log") { app.events.clear() }
+                        .font(.callout)
+                }
+            }
         }
     }
 
@@ -147,6 +177,40 @@ struct DashboardView: View {
                 Spacer(minLength: 0)
             }
             .padding(6)
+        }
+    }
+
+    struct EventRow: View {
+        let event: SweepEvent
+
+        private var icon: (name: String, color: Color) {
+            switch event.severity {
+            case .info: ("checkmark.circle", .secondary)
+            case .action: ("sparkles", .accentColor)
+            case .warning: ("exclamationmark.triangle.fill", .orange)
+            }
+        }
+
+        var body: some View {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: icon.name)
+                    .foregroundStyle(icon.color)
+                    .frame(width: 18)
+                    .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(event.title)
+                    if let detail = event.detail {
+                        Text(detail)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                Text(relativeDate(event.date))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 5)
         }
     }
 

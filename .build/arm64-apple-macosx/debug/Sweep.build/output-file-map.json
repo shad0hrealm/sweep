@@ -30,6 +30,13 @@
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/DebugCLI.dia"
   },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Events.swift": {
+    "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Events.d",
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Events.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Events~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Events.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/Events.dia"
+  },
   "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift": {
     "dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.d",
     "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/debug/Sweep.build/LargeFiles.swift.o",

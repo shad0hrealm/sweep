@@ -204,6 +204,10 @@ final class CleanupCategoryState: Identifiable {
             message += " — \(outcome.failures) could not be removed (in use or permission denied)"
         }
         lastMessage = message
+        if outcome.removed > 0 {
+            EventStore.append(.info, "Cleaned \(spec.title) — \(formatBytes(outcome.bytes)) freed",
+                              detail: permanent ? "Deleted permanently from the Trash." : "Items moved to the Trash.")
+        }
         await scan()
     }
 }

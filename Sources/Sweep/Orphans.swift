@@ -67,6 +67,9 @@ final class OrphansModel {
 
         lastMessage = "Moved \(outcome.0) item\(outcome.0 == 1 ? "" : "s") to Trash (\(formatBytes(outcome.1)))"
             + (outcome.2 > 0 ? " — \(outcome.2) failed" : "")
+        if outcome.0 > 0 {
+            EventStore.append(.info, "Cleaned orphaned leftovers — \(formatBytes(outcome.1)) freed")
+        }
         let fm = FileManager.default
         groups = groups.compactMap { group in
             let remaining = group.items.filter { fm.fileExists(atPath: $0.url.path) }

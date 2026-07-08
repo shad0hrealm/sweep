@@ -49,11 +49,87 @@ enum ScanScheduler {
 
 // MARK: - Headless scan (run via `Sweep --background-scan`)
 
+/// Snapshot from the previous scheduled run, used to detect changes.
+private struct ScanState: Codable {
+    var launchItemPaths: [String] = []
+    var securityWarnIDs: [String] = []
+}
+
 enum BackgroundScan {
     static let dateKey = "lastBackgroundScanDate"
     static let bytesKey = "lastBackgroundScanBytes"
+    static let junkThreshold: Int64 = 1_000_000_000
+
+    private static var stateURL: URL {
+        EventStore.fileURL.deletingLastPathComponent().appendingPathComponent("scan-state.json")
+    }
 
     static func run() {
+        let junk = measureJunk()
+        let defaults = UserDefaults.standard
+        defaults.set(Date().timeIntervalSince1970, forKey: dateKey)
+        defaults.set(junk, forKey: bytesKey)
+
+        // (severity, title, detail) — anything non-info triggers a notification.
+        var findings: [(SweepEvent.Severity, String, String?)] = []
+
+        if junk >= junkThreshold {
+            findings.append((.action, "\(formatBytes(junk)) of junk ready to review",
+                             "Caches, logs, Trash and developer leftovers. Open Sweep → Cleanup."))
+        }
+
+        let disk = StatsModel.readDisk()
+        if disk.total > 0, Double(disk.free) / Double(disk.total) < 0.10 {
+            findings.append((.warning, "Startup disk is nearly full — \(formatBytes(disk.free)) free",
+                             "Try Cleanup, Large & Old Files, and Orphaned Leftovers."))
+        }
+
+        let previous = loadState()
+        let launchItems = LaunchItemsModel.scanAll()
+        let securityChecks = SecurityModel.runAll()
+        let ignored = Set(UserDefaults.standard.stringArray(forKey: "ignoredSecurityChecks") ?? [])
+        let warnIDs = securityChecks.compactMap { check -> String? in
+            if case .warn = check.status, !ignored.contains(check.id) { return check.id }
+            return nil
+        }
+
+        // Only diff when a baseline exists — the first run just records one.
+        if let previous {
+            let knownPaths = Set(previous.launchItemPaths)
+            for item in launchItems where !knownPaths.contains(item.plistURL.path) {
+                let suspicious = !item.warnings.isEmpty
+                findings.append((suspicious ? .warning : .info,
+                                 "New \(suspicious ? "suspicious " : "")background item: \(item.label)",
+                                 item.warnings.first ?? item.plistURL.path))
+            }
+            for id in warnIDs where !previous.securityWarnIDs.contains(id) {
+                if let check = securityChecks.first(where: { $0.id == id }) {
+                    findings.append((.warning, "New security warning: \(check.title)", check.detail))
+                }
+            }
+        }
+
+        saveState(ScanState(launchItemPaths: launchItems.map(\.plistURL.path),
+                            securityWarnIDs: warnIDs))
+
+        for finding in findings {
+            EventStore.append(finding.0, finding.1, detail: finding.2)
+        }
+        EventStore.append(.info, "Scheduled scan finished — \(formatBytes(junk)) of junk found",
+                          detail: previous == nil ? "First run: recorded a baseline of background items and security status." : nil)
+        EventStore.flush()
+
+        // Notify only when there's something to act on; quiet runs just log.
+        let noteworthy = findings.filter { $0.0 != .info }
+        if !noteworthy.isEmpty {
+            notify(title: noteworthy.count == 1 ? noteworthy[0].1 : "Sweep: \(noteworthy.count) things worth a look",
+                   body: noteworthy.count == 1
+                       ? (noteworthy[0].2 ?? "Open Sweep for details.")
+                       : noteworthy.map(\.1).joined(separator: "\n"))
+        }
+    }
+
+    private static func measureJunk() -> Int64 {
         let fm = FileManager.default
         var total: Int64 = 0
         // Downloads are personal files, not junk — exclude them from the headline number.
@@ -70,15 +146,21 @@ enum BackgroundScan {
                 total += allocatedSize(of: whole)
             }
         }
-
-        let defaults = UserDefaults.standard
-        defaults.set(Date().timeIntervalSince1970, forKey: dateKey)
-        defaults.set(total, forKey: bytesKey)
-
-        notify(total: total)
+        return total
     }
 
-    private static func notify(total: Int64) {
+    private static func loadState() -> ScanState? {
+        guard let data = try? Data(contentsOf: stateURL) else { return nil }
+        return try? JSONDecoder().decode(ScanState.self, from: data)
+    }
+
+    private static func saveState(_ state: ScanState) {
+        if let data = try? JSONEncoder().encode(state) {
+            try? data.write(to: stateURL)
+        }
+    }
+
+    private static func notify(title: String, body: String) {
         guard Bundle.main.bundleIdentifier != nil else { return }
         let center = UNUserNotificationCenter.current()
         let semaphore = DispatchSemaphore(value: 0)
@@ -88,10 +170,8 @@ enum BackgroundScan {
                 return
             }
             let content = UNMutableNotificationContent()
-            content.title = "Sweep scan complete"
-            content.body = total > 100_000_000
-                ? "\(formatBytes(total)) of removable junk found. Open Sweep to review — nothing was cleaned automatically."
-                : "Your Mac is tidy: only \(formatBytes(total)) of junk found."
+            content.title = title
+            content.body = body
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             center.add(request) { _ in semaphore.signal() }
         }

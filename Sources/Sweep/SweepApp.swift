@@ -42,6 +42,7 @@ final class AppModel {
     let security = SecurityModel()
     let uninstaller = UninstallerModel()
     let orphans = OrphansModel()
+    let events = EventLogModel()
 
     init() {
         cleanup = CategorySpec.all().map(CleanupCategoryState.init)

@@ -40,6 +40,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Events.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift"
         },
         {
@@ -91,6 +95,7 @@
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/CleanupViews.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Dashboard.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/DebugCLI.swift.o",
+        "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Events.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/MenuBar.swift.o",
         "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Orphans.swift.o",
@@ -161,6 +166,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Events.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/LargeFiles.swift.o"
         },
         {
@@ -206,6 +215,7 @@
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/DebugCLI.swift",
+        "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Events.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift",
         "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Orphans.swift",
@@ -235,6 +245,7 @@
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/CleanupViews.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Dashboard.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/DebugCLI.swift",
+      "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Events.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/MenuBar.swift",
       "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Orphans.swift",
@@ -330,6 +341,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Events.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/LargeFiles.swift"
         },
         {
@@ -389,6 +404,10 @@
         {
           "kind" : "file",
           "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/DebugCLI.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Events.swift.o"
         },
         {
           "kind" : "file",

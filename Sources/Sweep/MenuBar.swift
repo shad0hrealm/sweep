@@ -69,6 +69,17 @@ struct MenuBarView: View {
                     .foregroundStyle(.secondary)
             }
 
+            if let latest = app.events.events.first(where: { $0.severity != .info }) {
+                HStack(alignment: .top, spacing: 6) {
+                    Image(systemName: latest.severity == .warning ? "exclamationmark.triangle.fill" : "sparkles")
+                        .foregroundStyle(latest.severity == .warning ? Color.orange : Color.accentColor)
+                        .font(.caption)
+                    Text(latest.title)
+                        .font(.caption)
+                        .lineLimit(2)
+                }
+            }
+
             Divider()
 
             HStack {
@@ -80,7 +91,10 @@ struct MenuBarView: View {
         }
         .padding(12)
         .frame(width: 280)
-        .task { await app.stats.refresh() }
+        .task {
+            await app.stats.refresh()
+            await app.events.refresh()
+        }
     }
 
     private func openMainWindow() {

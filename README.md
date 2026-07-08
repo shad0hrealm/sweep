@@ -62,9 +62,18 @@ directories, and orphaned agents whose binaries are gone.
 shortcuts. Toggle it in Settings.
 
 **Scheduled scans** (Settings) — a launchd agent runs `Sweep --background-scan`
-daily or weekly and posts a notification with the amount of reclaimable junk.
-Nothing is ever cleaned automatically. If you move Sweep.app, toggle the
-schedule off and on so the agent points at the new location.
+daily or weekly. Nothing is ever cleaned automatically. If you move Sweep.app,
+toggle the schedule off and on so the agent points at the new location.
+
+Each run measures junk, checks free disk space, and diffs the system against
+the previous run: new launch agents/daemons (with the suspicion heuristics
+applied) and newly-appeared security warnings (ignored checks stay silent).
+A notification fires only when something is actionable — quiet runs just log.
+
+**Activity & Recommendations** (Dashboard) — a persistent log shared by the app
+and the scheduled scan: cleanups you performed, scan results, and anything that
+changed while you were away. The menu-bar widget shows the latest
+recommendation. Events live in `~/Library/Application Support/Sweep/`.
 
 ## Building
 
