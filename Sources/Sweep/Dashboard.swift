@@ -44,29 +44,25 @@ struct DashboardView: View {
                         actionRow(
                             icon: "sparkles",
                             title: anyCleanupScanned ? "\(formatBytes(junkFound)) of removable junk found" : "Scan for junk files",
-                            subtitle: "Caches, logs, developer leftovers, Trash and old downloads",
-                            buttonTitle: anyCleanupScanned ? "Review & Clean" : "Open Cleanup"
+                            subtitle: "Caches, logs, developer leftovers, Trash and old downloads"
                         ) { app.section = .cleanup }
                         Divider()
                         actionRow(
                             icon: "app.dashed",
                             title: "Uninstall apps completely",
-                            subtitle: "Remove apps along with their support files and caches",
-                            buttonTitle: "Open"
+                            subtitle: "Remove apps along with their support files and caches"
                         ) { app.section = .uninstaller }
                         Divider()
                         actionRow(
                             icon: "doc.badge.clock",
                             title: "Find large & old files",
-                            subtitle: "Hunt down the big files you forgot about",
-                            buttonTitle: "Open"
+                            subtitle: "Hunt down the big files you forgot about"
                         ) { app.section = .largeFiles }
                         Divider()
                         actionRow(
                             icon: "speedometer",
                             title: "Review performance",
-                            subtitle: "Memory pressure, heavy processes, login items",
-                            buttonTitle: "Open"
+                            subtitle: "Memory pressure, heavy processes, login items"
                         ) { app.section = .performance }
                     }
                     .padding(6)
@@ -109,7 +105,8 @@ struct DashboardView: View {
                 Text("Activity & Recommendations")
                 Spacer()
                 if !app.events.events.isEmpty {
-                    Button("Clear Log") { app.events.clear() }
+                    Button("Clear") { app.events.clear() }
+                        .buttonStyle(.link)
                         .font(.callout)
                 }
             }
@@ -215,21 +212,27 @@ struct DashboardView: View {
     }
 
     private func actionRow(icon: String, title: String, subtitle: String,
-                           buttonTitle: String, action: @escaping () -> Void) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(Color.accentColor)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).fontWeight(.medium)
-                Text(subtitle)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+                           action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(Color.accentColor)
+                    .frame(width: 28)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).fontWeight(.medium)
+                    Text(subtitle)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            Spacer()
-            Button(buttonTitle, action: action)
+            .padding(.vertical, 8)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 8)
+        .buttonStyle(.plain)
     }
 }
