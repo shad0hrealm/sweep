@@ -9,19 +9,12 @@ almost everything goes to the Trash rather than being deleted outright.
 
 Grab `Sweep-x.y.zip` from the
 [latest release](https://github.com/shad0hrealm/sweep/releases/latest), unzip,
-and drop `Sweep.app` into `/Applications`.
+and drop `Sweep.app` into `/Applications`. Releases from v1.5 onward are
+Developer ID-signed and notarised — they open first try, no Gatekeeper hoops.
 
-The app is ad-hoc signed (not notarised). If it arrived with a quarantine flag
-(AirDrop, browser download), clear it once:
-
-```sh
-xattr -dr com.apple.quarantine /Applications/Sweep.app
-```
-
-**Updates are then automatic**: with the scheduled scan enabled, Sweep checks
-this repo's releases and installs new versions itself (Settings → Updates to
-turn that off or make it manual). Self-installed updates carry no quarantine
-flag, so this is a one-time step.
+**Updates are automatic**: with the scheduled scan enabled, Sweep checks this
+repo's releases and installs new versions itself (Settings → Updates to turn
+that off or make it manual).
 
 ## Modules
 
