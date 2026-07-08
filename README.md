@@ -5,6 +5,24 @@ discovery, performance visibility, and security checks — with a plain, native
 SwiftUI interface. Nothing is ever removed without an explicit confirmation, and
 almost everything goes to the Trash rather than being deleted outright.
 
+## Installing
+
+Grab `Sweep-x.y.zip` from the
+[latest release](https://github.com/shad0hrealm/sweep/releases/latest), unzip,
+and drop `Sweep.app` into `/Applications`.
+
+The app is ad-hoc signed (not notarised). If it arrived with a quarantine flag
+(AirDrop, browser download), clear it once:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Sweep.app
+```
+
+**Updates are then automatic**: with the scheduled scan enabled, Sweep checks
+this repo's releases and installs new versions itself (Settings → Updates to
+turn that off or make it manual). Self-installed updates carry no quarantine
+flag, so this is a one-time step.
+
 ## Modules
 
 **Dashboard** — storage/memory gauges, security posture at a glance, shortcuts

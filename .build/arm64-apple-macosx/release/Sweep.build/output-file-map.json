@@ -87,5 +87,11 @@
     "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller~partial.swiftmodule",
     "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.swiftdeps",
     "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Uninstaller.dia"
+  },
+  "/Users/shanehartmann/Projects/Sweep/Sources/Sweep/Updater.swift": {
+    "object": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Updater.swift.o",
+    "swiftmodule": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Updater~partial.swiftmodule",
+    "swift-dependencies": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Updater.swiftdeps",
+    "diagnostics": "/Users/shanehartmann/Projects/Sweep/.build/arm64-apple-macosx/release/Sweep.build/Updater.dia"
   }
 }
