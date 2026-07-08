@@ -10,6 +10,17 @@ plutil -replace CFBundleShortVersionString -string "$VERSION" Resources/Info.pli
 ./build-app.sh
 ditto -c -k --keepParent build/Sweep.app "build/Sweep-$VERSION.zip"
 
+# Notarise when credentials exist (xcrun notarytool store-credentials sweep-notary ...).
+# Stapling attaches the notarisation ticket so Gatekeeper approves offline.
+if xcrun notarytool history --keychain-profile sweep-notary >/dev/null 2>&1; then
+  echo "Notarising…"
+  xcrun notarytool submit "build/Sweep-$VERSION.zip" --keychain-profile sweep-notary --wait
+  xcrun stapler staple build/Sweep.app
+  ditto -c -k --keepParent build/Sweep.app "build/Sweep-$VERSION.zip"  # re-zip with ticket
+else
+  echo "NOTE: not notarised (no 'sweep-notary' keychain profile) — users may need to clear quarantine."
+fi
+
 git add Resources/Info.plist
 git diff --cached --quiet || git commit -m "Release $VERSION"
 git tag "v$VERSION"

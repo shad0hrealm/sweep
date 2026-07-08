@@ -14,10 +14,16 @@ if [ -f Resources/AppIcon.icns ]; then
   cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 fi
 
-# Sign with the stable self-signed identity when present (TCC keys permission
-# grants on signing identity — a stable cert means grants survive rebuilds and
-# auto-updates). Falls back to ad-hoc, where every build re-prompts.
-if security find-identity -v -p codesigning 2>/dev/null | grep -q "Sweep Signing"; then
+# Signing priority (TCC keys permission grants on signing identity — a stable
+# cert means grants survive rebuilds and auto-updates):
+#   1. Developer ID (notarisable, zero Gatekeeper friction) — hardened runtime required
+#   2. "Sweep Signing" self-signed (stable grants, local/family distribution)
+#   3. Ad-hoc (every rebuild re-prompts TCC)
+DEV_ID=$(security find-identity -v -p codesigning 2>/dev/null | grep -o '"Developer ID Application: [^"]*"' | head -1 | tr -d '"' || true)
+if [ -n "$DEV_ID" ]; then
+  codesign --force --options runtime --timestamp -s "$DEV_ID" "$APP"
+  echo "Signed with: $DEV_ID"
+elif security find-identity -v -p codesigning 2>/dev/null | grep -q "Sweep Signing"; then
   codesign --force -s "Sweep Signing" "$APP"
 else
   codesign --force -s - "$APP"
