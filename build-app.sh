@@ -14,7 +14,13 @@ if [ -f Resources/AppIcon.icns ]; then
   cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 fi
 
-# Ad-hoc sign so TCC permission grants (e.g. Full Disk Access) stick across rebuilds.
-codesign --force -s - "$APP"
+# Sign with the stable self-signed identity when present (TCC keys permission
+# grants on signing identity — a stable cert means grants survive rebuilds and
+# auto-updates). Falls back to ad-hoc, where every build re-prompts.
+if security find-identity -v -p codesigning 2>/dev/null | grep -q "Sweep Signing"; then
+  codesign --force -s "Sweep Signing" "$APP"
+else
+  codesign --force -s - "$APP"
+fi
 
 echo "Built $APP"

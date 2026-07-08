@@ -109,8 +109,14 @@ To install: `cp -R build/Sweep.app /Applications/`.
 
 macOS will prompt when Sweep first touches protected folders (Downloads, etc.).
 For complete results — especially Time Machine status and some caches — grant
-Sweep **Full Disk Access** in System Settings → Privacy & Security. The build
-script ad-hoc signs the bundle so that grant survives rebuilds.
+Sweep **Full Disk Access** in System Settings → Privacy & Security.
+
+macOS keys these grants on the app's *code-signing identity*, not its name.
+Release builds are signed with a stable self-signed certificate ("Sweep
+Signing"), so grants survive updates. If you build from source without that
+certificate in your keychain, the build falls back to ad-hoc signing and
+**every rebuild re-prompts** — create your own identity and put its name in
+`build-app.sh` to avoid that.
 
 ## Honest limitations
 
