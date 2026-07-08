@@ -83,7 +83,7 @@ struct SweepApp: App {
     @AppStorage("menuBarEnabled") private var menuBarEnabled = true
 
     var body: some Scene {
-        WindowGroup(id: "main") {
+        Window("Sweep", id: "main") {
             ContentView()
                 .environment(app)
         }
