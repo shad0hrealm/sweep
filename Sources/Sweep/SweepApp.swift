@@ -143,5 +143,6 @@ struct ContentView: View {
             case .settings: SettingsView()
             }
         }
+        .onAppear { Appearance.applyStored() }
     }
 }

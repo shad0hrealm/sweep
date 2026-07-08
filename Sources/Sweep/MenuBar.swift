@@ -92,6 +92,7 @@ struct MenuBarView: View {
         .padding(12)
         .frame(width: 280)
         .task {
+            Appearance.applyStored()
             await app.stats.refresh()
             await app.events.refresh()
         }

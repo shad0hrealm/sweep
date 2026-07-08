@@ -199,6 +199,38 @@ enum BackgroundScan {
     }
 }
 
+// MARK: - Appearance
+
+enum Appearance: String, CaseIterable, Identifiable {
+    case system, light, dark
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    static let key = "appearance"
+
+    @MainActor
+    func apply() {
+        switch self {
+        case .system: NSApp.appearance = nil
+        case .light: NSApp.appearance = NSAppearance(named: .aqua)
+        case .dark: NSApp.appearance = NSAppearance(named: .darkAqua)
+        }
+    }
+
+    @MainActor
+    static func applyStored() {
+        Appearance(rawValue: UserDefaults.standard.string(forKey: key) ?? "system")?.apply()
+    }
+}
+
 // MARK: - Settings view
 
 struct SettingsView: View {
@@ -209,6 +241,7 @@ struct SettingsView: View {
     @AppStorage(BackgroundScan.bytesKey) private var lastScanBytes = 0
     @AppStorage(Updater.checkKey) private var updateCheckEnabled = true
     @AppStorage(Updater.autoInstallKey) private var autoInstallUpdates = true
+    @AppStorage(Appearance.key) private var appearanceRaw = "system"
     @State private var scheduleError: String?
     @State private var updateStatus: String?
     @State private var availableRelease: Updater.Release?
@@ -216,6 +249,15 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            Section("Appearance") {
+                Picker("Theme", selection: $appearanceRaw) {
+                    ForEach(Appearance.allCases) { appearance in
+                        Text(appearance.title).tag(appearance.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
             Section("Menu Bar") {
                 Toggle("Show Sweep in the menu bar", isOn: $menuBarEnabled)
                 Text("Disk, memory and junk at a glance, without opening the app.")
@@ -296,6 +338,9 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Settings")
+        .onChange(of: appearanceRaw) { _, raw in
+            Appearance(rawValue: raw)?.apply()
+        }
         .onChange(of: scheduleEnabled) { _, enabled in
             scheduleError = nil
             if enabled {
