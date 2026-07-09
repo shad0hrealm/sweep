@@ -78,7 +78,22 @@ enum SweepMain {
     }
 }
 
+/// Keeps the process alive when the last window closes (SwiftUI's default is to
+/// terminate, which also tears down the menu bar extra) and restores the window
+/// when the Dock icon is clicked while none are open.
+final class SweepAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        false
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { NSApp.setActivationPolicy(.regular) }
+        return true
+    }
+}
+
 struct SweepApp: App {
+    @NSApplicationDelegateAdaptor(SweepAppDelegate.self) private var appDelegate
     @State private var app = AppModel()
     @AppStorage("menuBarEnabled") private var menuBarEnabled = true
 
