@@ -99,6 +99,7 @@ struct MenuBarView: View {
     }
 
     private func openMainWindow() {
+        NSApp.setActivationPolicy(.regular)
         openWindow(id: "main")
         NSApp.activate(ignoringOtherApps: true)
     }

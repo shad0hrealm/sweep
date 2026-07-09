@@ -100,6 +100,7 @@ struct SweepApp: App {
 struct ContentView: View {
     @Environment(AppModel.self) private var app
     @AppStorage(BackgroundScan.bytesKey) private var lastBackgroundScanBytes = 0
+    @AppStorage("menuBarEnabled") private var menuBarEnabled = true
 
     /// Sidebar badge — the macOS-native "something to consider here" affordance.
     private func badge(for section: AppSection) -> Text? {
@@ -143,6 +144,17 @@ struct ContentView: View {
             case .settings: SettingsView()
             }
         }
-        .onAppear { Appearance.applyStored() }
+        .onAppear {
+            Appearance.applyStored()
+            NSApp.setActivationPolicy(.regular)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
+            // When the main window closes, retreat to the menu bar (no Dock icon,
+            // no Cmd-Tab entry) — but only if the menu bar icon exists to get back in.
+            guard menuBarEnabled,
+                  let window = notification.object as? NSWindow,
+                  window.identifier?.rawValue.hasPrefix("main") == true else { return }
+            NSApp.setActivationPolicy(.accessory)
+        }
     }
 }
